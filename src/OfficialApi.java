@@ -19,7 +19,7 @@ import java.net.URL;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PrivateApi extends Plugin{
+public class OfficialApi extends Plugin{
 
 public static String api_key="";  //Enter the api key here.  在这里输入api key。
 

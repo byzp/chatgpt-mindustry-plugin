@@ -22,7 +22,7 @@ import java.net.URL;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class OfficialApi extends Plugin{
+public class PrivateApi extends Plugin{
 public static String message="";
 
     @Override
