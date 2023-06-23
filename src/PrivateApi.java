@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PrivateApi extends Plugin{
-public static String message="";
+public static String message="users:你好\nAI:你好，需要帮助吗？\n";
 
     @Override
     public void registerClientCommands(CommandHandler handler){
@@ -31,8 +31,8 @@ public static String message="";
         //register a simple reply command
         handler.<Player>register("c", "<text...>", "chat.", (args, player) -> {
             Thread newThread = new Thread(() -> {
-                player.sendMessage(">"+args[0]);
-                player.sendMessage("chat:" + post(args[0]));
+                Call.sendMessage(">"+args[0]);
+                Call.sendMessage(post(args[0]));
             });
             newThread.start();
         });
@@ -58,9 +58,19 @@ public static String message="";
             conn.setDoInput(true);
             // 使用 Java 内置的 JSONObject 类，创建一个 JSON 对象
             JSONObject data = new JSONObject();
-
+            for(int num=0;((message+"users:"+text+"\n").substring(num)).length()>400;num++){
+                if((message+"users:"+text+"\n").substring(num,num+5)=="users:"){
+                    message=message.substring(num);
+                    break;
+                }
+            }
+            /*
+            while(length(message+"users:"+text+"\n")>400){
+                if(
+                substring(1);
+            }*/
             // 将需要添加的属性逐一加入到 JSON 对象中
-            data.put("prompt", text);
+            data.put("prompt", message+"users:"+text+"\n");
             /*
             JSONObject bodyJson = new JSONObject();
             bodyJson.put("prompt", text);
@@ -88,11 +98,13 @@ public static String message="";
             is.close();
             //断开连接，disconnect是在底层tcp socket链接空闲时才切断，如果正在被其他线程使用就不切断。
             conn.disconnect();
-            
-            return result;
+            System.out.println(result);
+            message+="users:"+text+"\n"+result+"\n";
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e);
+            result="出错了，请重试";
         }finally {
             try {
                 if (out != null){
@@ -116,7 +128,7 @@ public static String message="";
             ooo=e.getMessage();
         }
         */
-        System.out.println(result);
+        
         return result;
     }
 
