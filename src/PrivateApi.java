@@ -61,7 +61,6 @@ public static String message="users:你好\nAI:你好，需要帮助吗？\n";
             for(int num=0;((message+"users:"+text+"\n").substring(num)).length()>400;num++){
                 if((message+"users:"+text+"\n").substring(num,num+5)=="users:"){
                     message=message.substring(num);
-                    break;
                 }
             }
             /*
