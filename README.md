@@ -1,6 +1,6 @@
 ## 在mindustry聊天栏工作的chatgpt
 
-[~]https://github.com/byzp/chatgpt-mindustry-plugin.git
+[~](https://github.com/byzp/chatgpt-mindustry-plugin.git)
 
 它是plugin，但你可以将它作为mod使用，仅安装mod的玩家作主机有效。OfficialApi版本使用官方接口，PrivateApi使用第三方接口。可用命令(注意中间有空格)：/c <message>；/c 重置会话
 
