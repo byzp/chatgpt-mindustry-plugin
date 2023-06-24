@@ -2,7 +2,7 @@
 
 [~](https://github.com/byzp/chatgpt-mindustry-plugin.git)
 
-它是plugin，但你可以将它作为mod使用，仅安装mod的玩家作主机有效。OfficialApi版本使用官方接口，PrivateApi使用第三方接口。可用命令(注意中间有空格)：/c <message>；/c 重置会话
+它是plugin，但你可以将它作为mod使用，仅安装mod的玩家作主机有效。OfficialApi版本使用官方接口，PrivateApi使用第三方接口。可用命令(注意中间有空格)：/c message；/c 重置会话
 
 - src/OfficialApi.java和src/PrivateApi.java只需保留一个
 
@@ -17,5 +17,5 @@
 #使用d8转换jar为dex再重新打包可能更容易
 ```
 
-- 将build/libs/里编译好的文件放入mod文件夹，启用多人游戏，在聊天栏输入/c <message>
+- 将build/libs/里编译好的文件放入mod文件夹，启用多人游戏，在聊天栏输入/c message
 
