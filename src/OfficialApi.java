@@ -1,5 +1,4 @@
 
-
 import java.util.ArrayList;
 import arc.*;
 import arc.util.*;
@@ -18,30 +17,62 @@ import java.net.URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 
 public class OfficialApi extends Plugin{
 
-public static String api_key="";  //Enter the api key here.  在这里输入api key。
+public static String api_key="在这里填入api_key";  //api key
+public static double temperature=0.7; //对话温度
+public static String model="gpt-3.5-turbo";  //模型
+public static String pathUrl="https://api.openai.com/v1/chat/completions"; //访问地址
+public static int max_history_len=800;//最大记忆长度(字符数)，不建议超过3000
 
+//public static ArrayList<String> mess = new ArrayList<String>();
+public static ArrayList mess = new ArrayList<>();
+public static int Initialization=1;
+public static int len=0;
+public static ArrayList len_list = new ArrayList<>();
     @Override
     public void registerClientCommands(CommandHandler handler){
 
         //register a simple reply command
-        handler.<Player>register("c", "<text...>", "chat.", (args, player) -> {
+        handler.<Player>register("c", "<content...>", "chat.", (args, player) -> {
             Thread newThread = new Thread(() -> {
-                player.sendMessage(">"+args[0]);
-                player.sendMessage("chat:" + post(args[0]));
+                Call.sendMessage(">"+args[0]);
+                Call.sendMessage("Assistant:" + post(args[0]));
             });
             newThread.start();
         });
     }
 
-
-    public static String post(String text){
-        String pathUrl="https://api.openai.com/v1/chat/completions";
+    public void cz(){
+        for(int len = mess.size()-1; len>=0; len--){  
+            mess.remove(len);
+        }
+    }
+    
+    public String post(String content){
+        if(content.equals("重置会话")){
+            cz();
+            len=0;
+            return "会话已重置";
+        }
+        while(len>max_history_len){
+            int mess_size=mess.size();
+            int len_list_size=len_list.size();
+            len-=(int)len_list.get(len_list_size-1)+(int)len_list.get(len_list_size-2);
+            mess.remove(mess_size-1);
+            mess.remove(mess_size-2);
+            len_list.remove(len_list_size-1);
+            len_list.remove(len_list_size-2);
+        }
         OutputStreamWriter out = null;
         BufferedReader br = null;
         String result = "";
+        String ooo = "";
+        JSONObject data = new JSONObject();
+        JSONObject mes = new JSONObject();
+        JSONObject mes1 = new JSONObject();
         try {
             URL url = new URL(pathUrl);
             //打开连接
@@ -54,26 +85,20 @@ public static String api_key="";  //Enter the api key here.  在这里输入api 
             //DoOutput设置是否向httpUrlConnection输出，DoInput设置是否从httpUrlConnection读入，此外发送post请求必须设置这两个
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            String data="{\"model\": \"gpt-3.5-turbo\",\"messages\": [{\"role\": \"user\", \"content\": \""+text+"\"}], \"temperature\": 0.7}";
-            /*
-            JSONObject data = new JSONObject();
-            data.put("model","gpt-3.5-turbo");
-            JSONObject hst = new JSONObject();
-            hst.put("role","user");
-            hst.put("content",text);
-            ArrayList mes =new ArrayList<>();
-            mes.add(hst);
-            data.put("messages",mes);
-            data.put("temperature",0.7);
-            */
-
-            /**
-             * 下面的三句代码，就是调用第三方http接口
-             */
+            
+            mes.put("role","user");
+            mes.put("content",content);
+            
+            mess.add(mes);
+            data.put("model",model);
+            data.put("temperature",temperature);
+            data.put("messages",mess);
+            System.out.println(data);
+            
             //获取URLConnection对象对应的输出流
             out = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             //发送请求参数即数据
-            out.write(data);
+            out.write(data.toString());
             //flush输出流的缓冲
             out.flush();
 
@@ -89,15 +114,31 @@ public static String api_key="";  //Enter the api key here.  在这里输入api 
                 result += str;
             }
             
-            //System.out.println(result);
+            System.out.println(result);
             //关闭流
             is.close();
             //断开连接，disconnect是在底层tcp socket链接空闲时才切断，如果正在被其他线程使用就不切断。
             conn.disconnect();
             
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode rootNode = mapper.readTree(result);
+                ooo = rootNode.get("choices").get(0).get("message").get("content").asText();
+                mes1.put("role","assistant");
+                mes1.put("content",ooo);
+                mess.add(mes1);
+                len+=content.length()+ooo.length();
+                len_list.add(content.length()+ooo.length());
+            } catch (Exception e) {
+                e.printStackTrace();
+                mess.remove(mess.size()-1);
+                ooo="出错了，请重试";
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
+            mess.remove(mess.size()-1);
+            ooo="出错了，请重试";
         }finally {
             try {
                 if (out != null){
@@ -108,17 +149,11 @@ public static String api_key="";  //Enter the api key here.  在这里输入api 
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                mess.remove(mess.size()-1);
+                ooo="出错了，请重试";
             }
         }
-        String ooo;
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(result);
-            String content = rootNode.get("choices").get(0).get("message").get("content").asText();
-            ooo=content;
-        } catch (Exception e) {
-            ooo=e.getMessage();
-        }
+
         return ooo;
     }
 
