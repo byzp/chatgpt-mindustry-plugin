@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 public class PrivateApi extends Plugin{
 public static String message="users:你好\nAI:你好，需要帮助吗？\n";
-public static int max_len=400;//经过粗略，测试极限约800字符
+public static int max_len=100;//经过粗略，测试极限约800字符
 
     @Override
     public void registerClientCommands(CommandHandler handler){
@@ -64,7 +64,7 @@ public static int max_len=400;//经过粗略，测试极限约800字符
             // 使用 Java 内置的 JSONObject 类，创建一个 JSON 对象
             JSONObject data = new JSONObject();
             for(int num=0;((message+"users:"+content+"\n").substring(num)).length()>max_len;num++){
-                if((message+"users:"+content+"\n").substring(num,num+5)=="users:"){
+                if((message+"users:"+content+"\n").substring(num,num+6).equals("users:")){
                     message=message.substring(num);
                 }
             }
