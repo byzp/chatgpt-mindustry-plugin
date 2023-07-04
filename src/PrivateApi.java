@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 public class PrivateApi extends Plugin{
 public static String message="users:你好\nAI:你好，需要帮助吗？\n";
-public static int max_len=100;//经过粗略，测试极限约800字符
+public static int max_len=400;//经过粗略测试极限约800字符
 
     @Override
     public void registerClientCommands(CommandHandler handler){
